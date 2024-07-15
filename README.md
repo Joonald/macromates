@@ -62,6 +62,7 @@ cd macromates
 ## Environment Variables
 
 Create a .env file in the backend directory with the following variables:
+
 MONGO_URI=your_mongodb_uri
 JWT_SECRET=your_jwt_secret
 
