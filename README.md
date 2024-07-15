@@ -32,6 +32,7 @@ Macromates is a web application tailored for nutrition communities such as healt
 - **Authentication:**
   - JWT (JSON Web Tokens)
 - **Image Storage:**
+  - TBD
 
 ## Installation
 
@@ -52,12 +53,17 @@ cd macromates
 
 - **Backend:**
 
-  - cd backend
-  - npm install
+```bash
+cd backend
+npm install
+```
 
 - **Frontend:**
-  - cd ../frontend
-  - npm install
+
+```bash
+cd ../frontend
+npm install
+```
 
 ## Environment Variables
 
@@ -69,11 +75,18 @@ JWT_SECRET=your_jwt_secret
 ## Run the Application
 
 - **Backend:**
-  - cd backend
-  - npm run start
+
+```bash
+cd backend
+npm run start
+```
+
 - **Frontend:**
-  - cd frontend
-  - npm run start
+
+```bash
+cd frontend
+npm run start
+```
 
 The application should now be running on http://localhost:5173.
 
@@ -94,7 +107,7 @@ The application should now be running on http://localhost:5173.
 ## Browsing and Searching
 
 - Use the search bar to find recipes by keyword.
-- Apply filters to narrow down your search by cuisine, dietary preferences, preparation time, etc.
+- Apply filters to narrow down your search by cuisine, dietary preferences, etc.
 
 ## Favoriting and Commenting
 
