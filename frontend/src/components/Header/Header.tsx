@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faX, faBars } from "@fortawesome/free-solid-svg-icons";
+import { useModalDispatch } from "../../utils/modalProvider";
 
 function HeaderLinks() {
   return (
@@ -39,6 +40,12 @@ function HeaderLinks() {
 
 function Header() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const dispatch = useModalDispatch();
+
+  function openModal() {
+    dispatch("OPEN_MODAL");
+    console.log("Open Modal");
+  }
 
   const toggleNavbar = () => {
     setIsOpen(!isOpen);
@@ -57,7 +64,11 @@ function Header() {
           <button className='hidden py-2 px-4 rounded-2xl bg-gray-200 text-sm md:inline md: mr-2'>
             Log In
           </button>
-          <button className='py-2 px-4 bg-primary-800 rounded-2xl text-sm text-slate-50'>
+          <button
+            onClick={openModal}
+            data-modal-target='signup-modal'
+            data-modal-show='signup-modal'
+            className='py-2 px-4 bg-primary-800 rounded-2xl text-sm text-slate-50'>
             Sign Up
           </button>
         </div>
