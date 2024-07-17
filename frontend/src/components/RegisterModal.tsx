@@ -1,6 +1,6 @@
 // import { Button, Label, Modal, TextInput } from "flowbite-react";
 import { useState, useContext, ChangeEvent, FormEvent } from "react";
-import { useModalDispatch, useModalState } from "../utils/modalProvider";
+import { useModalDispatch, useModalState } from "../contexts/signup";
 import axios from "axios";
 
 interface IRegisterUser {
@@ -28,9 +28,9 @@ export default function RegisterModal() {
 
   function toggleModal() {
     if (modalState === false) {
-      dispatch("OPEN_MODAL");
+      dispatch({ type: "OPEN_MODAL" });
     } else {
-      dispatch("CLOSE_MODAL");
+      dispatch({ type: "CLOSE_MODAL" });
     }
   }
 

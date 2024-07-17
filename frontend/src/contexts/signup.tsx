@@ -6,25 +6,25 @@ import {
   useContext,
 } from "react";
 
-export const ModalContext = createContext(false);
+export const ModalContext = createContext<boolean>(false);
 export const ModalDispatchContext = createContext<Dispatch<ACTIONTYPE>>(
-  () => null
+  () => {}
 );
 
-type ACTIONTYPE = "OPEN_MODAL" | "CLOSE_MODAL";
+type ACTIONTYPE = { type: "OPEN_MODAL" } | { type: "CLOSE_MODAL" };
 
 function modalReducer(state: boolean, action: ACTIONTYPE): boolean {
-  switch (action) {
+  switch (action.type) {
     case "OPEN_MODAL":
       return true;
     case "CLOSE_MODAL":
       return false;
     default:
-      return false;
+      throw new Error(`Unhandled action type: ${action}`);
   }
 }
 
-export default function ModalProvider({ children }: { children: ReactNode }) {
+export function SignUpProvider({ children }: { children: ReactNode }) {
   const initialState = false;
   const [state, dispatch] = useReducer(modalReducer, initialState);
 

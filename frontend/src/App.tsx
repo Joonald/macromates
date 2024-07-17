@@ -12,7 +12,7 @@ import Layout from "./Layout";
 import Discover from "./pages/Discover/Discover";
 import Category from "./pages/Category/Category";
 import { RecipeProvider } from "./contexts/recipes";
-import ModalProvider from "./utils/modalProvider";
+import { SignUpProvider } from "./contexts/signup";
 import { IRecipe } from "./interfaces/recipeInterface";
 import { recipeURL } from "./utils/globalVar";
 import SingleRecipe from "./pages/SingleRecipe/SingleRecipe";
@@ -87,13 +87,11 @@ function App() {
 
   return (
     <>
-      <ModalProvider
-        children={
-          <RecipeProvider value={{ isLoading, recipeData }}>
-            <RouterProvider router={router} />
-          </RecipeProvider>
-        }
-      />
+      <SignUpProvider>
+        <RecipeProvider value={{ isLoading, recipeData }}>
+          <RouterProvider router={router} />
+        </RecipeProvider>
+      </SignUpProvider>
     </>
   );
 }
