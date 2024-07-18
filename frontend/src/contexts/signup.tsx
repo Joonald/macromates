@@ -6,14 +6,14 @@ import {
   useContext,
 } from "react";
 
-export const ModalContext = createContext<boolean>(false);
-export const ModalDispatchContext = createContext<Dispatch<ACTIONTYPE>>(
+export const SignUpModalContext = createContext<boolean>(false);
+export const SignUpModalDispatchContext = createContext<Dispatch<ACTIONTYPE>>(
   () => {}
 );
 
 type ACTIONTYPE = { type: "OPEN_MODAL" } | { type: "CLOSE_MODAL" };
 
-function modalReducer(state: boolean, action: ACTIONTYPE): boolean {
+function signupModalReducer(state: boolean, action: ACTIONTYPE): boolean {
   switch (action.type) {
     case "OPEN_MODAL":
       return true;
@@ -26,21 +26,21 @@ function modalReducer(state: boolean, action: ACTIONTYPE): boolean {
 
 export function SignUpProvider({ children }: { children: ReactNode }) {
   const initialState = false;
-  const [state, dispatch] = useReducer(modalReducer, initialState);
+  const [state, dispatch] = useReducer(signupModalReducer, initialState);
 
   return (
-    <ModalContext.Provider value={state}>
-      <ModalDispatchContext.Provider value={dispatch}>
+    <SignUpModalContext.Provider value={state}>
+      <SignUpModalDispatchContext.Provider value={dispatch}>
         {children}
-      </ModalDispatchContext.Provider>
-    </ModalContext.Provider>
+      </SignUpModalDispatchContext.Provider>
+    </SignUpModalContext.Provider>
   );
 }
 
-export function useModalState() {
-  return useContext(ModalContext);
+export function useSignUpModalState() {
+  return useContext(SignUpModalContext);
 }
 
-export function useModalDispatch() {
-  return useContext(ModalDispatchContext);
+export function useSignUpModalDispatch() {
+  return useContext(SignUpModalDispatchContext);
 }

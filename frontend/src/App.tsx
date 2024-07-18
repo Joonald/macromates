@@ -13,7 +13,7 @@ import Discover from "./pages/Discover/Discover";
 import Category from "./pages/Category/Category";
 import { RecipeProvider } from "./contexts/recipes";
 import { SignUpProvider } from "./contexts/signup";
-import { IRecipe } from "./interfaces/recipeInterface";
+import { IRecipe } from "./interfaces/recipe-interface";
 import { recipeURL } from "./utils/globalVar";
 import SingleRecipe from "./pages/SingleRecipe/SingleRecipe";
 import SearchResult from "./pages/SearchResult/SearchResult";

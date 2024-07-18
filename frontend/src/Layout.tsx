@@ -3,13 +3,13 @@ import { Outlet } from "react-router-dom";
 import Header from "./components/Header/Header";
 import Footer from "./components/Footer/Footer";
 import ScrollToTop from "./components/ScrollToTop/ScrollToTop";
-import RegisterModal from "./components/RegisterModal";
+import SignUpModal from "./components/SignUp/SignUpModal";
 
 function Layout() {
   return (
     <ScrollToTop>
       <Header />
-      <RegisterModal />
+      <SignUpModal />
       <Outlet />
       <Footer />
     </ScrollToTop>
