@@ -4,13 +4,29 @@ import {
   useSignUpModalState,
 } from "../../contexts/signup";
 import axios from "axios";
+import { useForm } from "react-hook-form";
+import { DevTool } from "@hookform/devtools";
+import { NewUser } from "../../interfaces/signup-interface";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
 
 export default function SignUpModal() {
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { errors },
+    watch,
+  } = useForm<NewUser>();
+  const userPassword = watch("password", "");
   const modalState = useSignUpModalState();
   const dispatch = useSignUpModalDispatch();
   const formRef = useRef<HTMLDivElement | null>(null);
 
-  // const [formData, setFormData] = useState<IRegisterUser>({
+  function onSubmit(data: NewUser) {
+    console.log("Form Submitted.", data);
+  }
+  // const [formData, setFormData] = useState<SignUpUser >({
   //   username: "",
   //   firstName: "",
   //   lastName: "",
@@ -28,23 +44,23 @@ export default function SignUpModal() {
       dispatch({ type: "CLOSE_MODAL" });
     }
   }
-  //
-  useEffect(() => {
-    // Function to close the signup modal when clicking outside of it
-    const handleClickOutside = (event: MouseEvent) => {
-      if (formRef.current && !formRef.current.contains(event.target as Node)) {
-        toggleModal();
-      }
-    };
 
-    // Add event listener to detect clicks outside the modal
-    document.addEventListener("mousedown", handleClickOutside);
+  // useEffect(() => {
+  //   // Function to close the signup modal when clicking outside of it
+  //   const handleClickOutside = (event: MouseEvent) => {
+  //     if (formRef.current && !formRef.current.contains(event.target as Node)) {
+  //       toggleModal();
+  //     }
+  //   };
 
-    // Cleanup function to remove the event listener on component unmount
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  });
+  //   // Add event listener to detect clicks outside the modal
+  //   document.addEventListener("mousedown", handleClickOutside);
+
+  //   // Cleanup function to remove the event listener on component unmount
+  //   return () => {
+  //     document.removeEventListener("mousedown", handleClickOutside);
+  //   };
+  // });
 
   // function handleChange(event: ChangeEvent<HTMLInputElement>) {
   //   const { name, value } = event.target;
@@ -138,7 +154,7 @@ export default function SignUpModal() {
                 <div className='p-4 md:p-5'>
                   <form
                     className='space-y-4'
-                    action='#'>
+                    onSubmit={handleSubmit(onSubmit)}>
                     <div className='relative'>
                       <label
                         htmlFor='username'
@@ -146,12 +162,26 @@ export default function SignUpModal() {
                         Username
                       </label>
                       <input
+                        {...register("username", {
+                          required: {
+                            value: true,
+                            message: "Username is required",
+                          },
+                        })}
                         type='text'
                         name='username'
                         id='username'
                         className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-400 focus:border-primary-400 block w-full p-2.5'
-                        required
                       />
+                      {errors.username?.message && (
+                        <p className='text-xs text-red-500 mt-1'>
+                          <FontAwesomeIcon
+                            icon={faCircleExclamation}
+                            className='mr-1'
+                          />
+                          {errors.username?.message}
+                        </p>
+                      )}
                     </div>
                     <div className='flex gap-2'>
                       <div className='w-full'>
@@ -161,12 +191,28 @@ export default function SignUpModal() {
                           First Name
                         </label>
                         <input
+                          {...register("firstName", {
+                            required: {
+                              value: true,
+                              message: "First name is required",
+                            },
+                          })}
                           type='text'
                           name='firstName'
                           id='firstName'
                           className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-400 focus:border-primary-400 block w-full p-2.5'
-                          required
                         />
+                        {errors.firstName?.message ? (
+                          <p className='text-xs text-red-500 mt-1'>
+                            <FontAwesomeIcon
+                              icon={faCircleExclamation}
+                              className='mr-1'
+                            />
+                            {errors.firstName?.message}
+                          </p>
+                        ) : (
+                          ""
+                        )}
                       </div>
                       <div className='w-full'>
                         <label
@@ -175,12 +221,26 @@ export default function SignUpModal() {
                           Last Name
                         </label>
                         <input
+                          {...register("lastName", {
+                            required: {
+                              value: true,
+                              message: "Last name is required",
+                            },
+                          })}
                           type='text'
                           name='lastName'
                           id='lastName'
                           className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-400 focus:border-primary-400 block w-full p-2.5'
-                          required
                         />
+                        {errors.lastName?.message && (
+                          <p className='text-xs text-red-500 mt-1'>
+                            <FontAwesomeIcon
+                              icon={faCircleExclamation}
+                              className='mr-1'
+                            />
+                            {errors.lastName?.message}
+                          </p>
+                        )}
                       </div>
                     </div>
                     <div>
@@ -190,13 +250,31 @@ export default function SignUpModal() {
                         Email
                       </label>
                       <input
+                        {...register("email", {
+                          required: {
+                            value: true,
+                            message: "Email is required",
+                          },
+                          pattern: {
+                            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                            message: "Invalid email",
+                          },
+                        })}
                         type='email'
                         name='email'
                         id='email'
                         className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-400 focus:border-primary-400 block w-full p-2.5'
                         placeholder='name@company.com'
-                        required
                       />
+                      {errors.email?.message && (
+                        <p className='text-xs text-red-500 mt-1'>
+                          <FontAwesomeIcon
+                            icon={faCircleExclamation}
+                            className='mr-1'
+                          />
+                          {errors.email?.message}
+                        </p>
+                      )}
                     </div>
                     <div className='flex gap-2'>
                       <div className='w-full'>
@@ -206,13 +284,28 @@ export default function SignUpModal() {
                           Password
                         </label>
                         <input
+                          {...register("password", {
+                            required: {
+                              value: true,
+                              message: "Password required",
+                            },
+                          })}
                           type='password'
                           name='password'
                           id='password'
                           placeholder='••••••••'
                           className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-400 focus:border-primary-400 block w-full p-2.5'
-                          required
+                          autoComplete='new-password'
                         />
+                        {errors.password?.message && (
+                          <p className='text-xs text-red-500 mt-1'>
+                            <FontAwesomeIcon
+                              icon={faCircleExclamation}
+                              className='mr-1'
+                            />
+                            {errors.password?.message}
+                          </p>
+                        )}
                       </div>
                       <div className='w-full'>
                         <label
@@ -221,13 +314,35 @@ export default function SignUpModal() {
                           Confirm Password
                         </label>
                         <input
-                          type='passwordConfirm'
+                          {...register("passwordConfirm", {
+                            required: {
+                              value: true,
+                              message: "Password required",
+                            },
+                            validate: {
+                              confirmPw: (fieldValue) => {
+                                if (fieldValue !== userPassword) {
+                                  return "Passwords do not match";
+                                }
+                              },
+                            },
+                          })}
+                          type='password'
                           name='passwordConfirm'
                           id='passwordConfirm'
                           placeholder='••••••••'
                           className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-400 focus:border-primary-400 block w-full p-2.5'
-                          required
+                          autoComplete='new-password'
                         />
+                        {errors.passwordConfirm?.message && (
+                          <p className='text-xs text-red-500 mt-1'>
+                            <FontAwesomeIcon
+                              icon={faCircleExclamation}
+                              className='mr-1'
+                            />
+                            {errors.passwordConfirm?.message}
+                          </p>
+                        )}
                       </div>
                     </div>
                     <button
@@ -242,6 +357,7 @@ export default function SignUpModal() {
           </section>
         </div>
       )}
+      <DevTool control={control} />
     </>
   );
 }
