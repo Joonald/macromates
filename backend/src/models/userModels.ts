@@ -17,7 +17,7 @@ export interface IUser {
 const userSchema = new Schema<IUser>({
   username: {
     type: String,
-    required: [true, "Please enter a name."],
+    required: [true, "Please enter a username."],
     unique: true,
     trim: true,
   },
