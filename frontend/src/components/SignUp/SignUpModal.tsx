@@ -3,9 +3,9 @@ import {
   useSignUpModalDispatch,
   useSignUpModalState,
 } from "../../contexts/signup";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { useForm } from "react-hook-form";
-import { DevTool } from "@hookform/devtools";
+// import { DevTool } from "@hookform/devtools";
 import { NewUser } from "../../interfaces/signup-interface";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
@@ -13,7 +13,7 @@ import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
 interface CustomError {
   response: {
     data: {
-      field: string[]; // Adjust this based on your actual error response structure
+      field: string[];
       message: string;
     };
   };
@@ -22,7 +22,6 @@ interface CustomError {
 export default function SignUpModal() {
   const {
     register,
-    control,
     handleSubmit,
     formState: { errors },
     watch,
@@ -36,17 +35,6 @@ export default function SignUpModal() {
     undefined
   );
 
-  // const [formData, setFormData] = useState<SignUpUser >({
-  //   username: "",
-  //   firstName: "",
-  //   lastName: "",
-  //   email: "",
-  //   password: "",
-  //   passwordConfirm: "",
-  // });
-
-  // const [confirmPassword, setConfirmPassword] = useState<boolean>(true);
-
   function toggleModal() {
     if (modalState === false) {
       dispatch({ type: "OPEN_MODAL" });
@@ -54,23 +42,6 @@ export default function SignUpModal() {
       dispatch({ type: "CLOSE_MODAL" });
     }
   }
-
-  // useEffect(() => {
-  //   // Function to close the signup modal when clicking outside of it
-  //   const handleClickOutside = (event: MouseEvent) => {
-  //     if (formRef.current && !formRef.current.contains(event.target as Node)) {
-  //       toggleModal();
-  //     }
-  //   };
-
-  //   // Add event listener to detect clicks outside the modal
-  //   document.addEventListener("mousedown", handleClickOutside);
-
-  //   // Cleanup function to remove the event listener on component unmount
-  //   return () => {
-  //     document.removeEventListener("mousedown", handleClickOutside);
-  //   };
-  // });
 
   async function onSubmit(signUpData: NewUser) {
     try {
@@ -93,17 +64,28 @@ export default function SignUpModal() {
   }
 
   useEffect(() => {
+    // Function to close the signup modal when clicking outside of it
+    const handleClickOutside = (event: MouseEvent) => {
+      if (formRef.current && !formRef.current.contains(event.target as Node)) {
+        toggleModal();
+      }
+    };
+
+    // Add event listener to detect clicks outside the modal
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Cleanup function to remove the event listener on component unmount
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  });
+
+  useEffect(() => {
     document.body.style.overflow = modalState ? "hidden" : "unset";
     return () => {
       document.body.style.overflow = "unset";
     };
   }, [modalState]);
-
-  // useEffect(() => {
-  //   if (isSubmitSuccessful) {
-  //     reset();
-  //   }
-  // }, [isSubmitSuccessful, reset]);
 
   return (
     <>
@@ -176,6 +158,7 @@ export default function SignUpModal() {
                         name='username'
                         id='username'
                         className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-400 focus:border-primary-400 block w-full p-2.5'
+                        autoComplete='username'
                       />
                       {errors.username?.message && (
                         <p className='text-xs text-red-500 mt-1'>
@@ -382,7 +365,7 @@ export default function SignUpModal() {
           </section>
         </div>
       )}
-      <DevTool control={control} />
+      {/* <DevTool control={control} /> */}
     </>
   );
 }
