@@ -1,14 +1,23 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   useSignUpModalDispatch,
   useSignUpModalState,
 } from "../../contexts/signup";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 import { NewUser } from "../../interfaces/signup-interface";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
+
+interface CustomError {
+  response: {
+    data: {
+      field: string[]; // Adjust this based on your actual error response structure
+      message: string;
+    };
+  };
+}
 
 export default function SignUpModal() {
   const {
@@ -22,10 +31,11 @@ export default function SignUpModal() {
   const modalState = useSignUpModalState();
   const dispatch = useSignUpModalDispatch();
   const formRef = useRef<HTMLDivElement | null>(null);
+  const [emailError, setEmailError] = useState<string | undefined>(undefined);
+  const [usernameError, setUsernameError] = useState<string | undefined>(
+    undefined
+  );
 
-  function onSubmit(data: NewUser) {
-    console.log("Form Submitted.", data);
-  }
   // const [formData, setFormData] = useState<SignUpUser >({
   //   username: "",
   //   firstName: "",
@@ -62,38 +72,25 @@ export default function SignUpModal() {
   //   };
   // });
 
-  // function handleChange(event: ChangeEvent<HTMLInputElement>) {
-  //   const { name, value } = event.target;
-  //   setFormData({
-  //     ...formData,
-  //     [name]: value,
-  //   });
-  // }
-
-  // async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-  //   event.preventDefault();
-  //   try {
-  //     if (formData.password !== formData.passwordConfirm) {
-  //       setConfirmPassword(false);
-  //     } else {
-  //       const response = await axios.post(
-  //         "http://127.0.0.1:4000/api/v1/users/signup",
-  //         formData
-  //       );
-  //       setConfirmPassword(true);
-  //       console.log(response.data);
-  //       closeModal();
-  //     }
-  //   } catch (error) {
-  //     console.error("Error submitting form:", error);
-  //   }
-  // }
-
-  // console.log(
-  //   confirmPassword,
-  //   "Password:" + formData.password,
-  //   "Password Confirm:" + formData.passwordConfirm
-  // );
+  async function onSubmit(signUpData: NewUser) {
+    try {
+      const response = await axios.post(
+        "http://127.0.0.1:4000/api/v1/users/signup",
+        signUpData
+      );
+      toggleModal();
+      console.log("Account was created");
+    } catch (error) {
+      const typedError = error as CustomError;
+      if (typedError.response?.data.field[0] === "email") {
+        setEmailError(typedError.response?.data.message);
+      }
+      if (typedError.response?.data.field[0] === "username") {
+        setUsernameError(typedError.response?.data.message);
+      }
+      console.log("Account was not created");
+    }
+  }
 
   useEffect(() => {
     document.body.style.overflow = modalState ? "hidden" : "unset";
@@ -101,6 +98,12 @@ export default function SignUpModal() {
       document.body.style.overflow = "unset";
     };
   }, [modalState]);
+
+  // useEffect(() => {
+  //   if (isSubmitSuccessful) {
+  //     reset();
+  //   }
+  // }, [isSubmitSuccessful, reset]);
 
   return (
     <>
@@ -152,6 +155,7 @@ export default function SignUpModal() {
                 </div>
                 {/* <!-- Modal body --> */}
                 <div className='p-4 md:p-5'>
+                  {/* <p>{error}</p> */}
                   <form
                     className='space-y-4'
                     onSubmit={handleSubmit(onSubmit)}>
@@ -182,6 +186,15 @@ export default function SignUpModal() {
                           {errors.username?.message}
                         </p>
                       )}
+                      {usernameError && (
+                        <p className='text-xs text-red-500 mt-1'>
+                          <FontAwesomeIcon
+                            icon={faCircleExclamation}
+                            className='mr-1'
+                          />
+                          {usernameError}
+                        </p>
+                      )}
                     </div>
                     <div className='flex gap-2'>
                       <div className='w-full'>
@@ -201,6 +214,7 @@ export default function SignUpModal() {
                           name='firstName'
                           id='firstName'
                           className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-400 focus:border-primary-400 block w-full p-2.5'
+                          autoComplete='first name'
                         />
                         {errors.firstName?.message ? (
                           <p className='text-xs text-red-500 mt-1'>
@@ -231,6 +245,7 @@ export default function SignUpModal() {
                           name='lastName'
                           id='lastName'
                           className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-400 focus:border-primary-400 block w-full p-2.5'
+                          autoComplete='last name'
                         />
                         {errors.lastName?.message && (
                           <p className='text-xs text-red-500 mt-1'>
@@ -265,6 +280,7 @@ export default function SignUpModal() {
                         id='email'
                         className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-400 focus:border-primary-400 block w-full p-2.5'
                         placeholder='name@company.com'
+                        autoComplete='new email'
                       />
                       {errors.email?.message && (
                         <p className='text-xs text-red-500 mt-1'>
@@ -273,6 +289,15 @@ export default function SignUpModal() {
                             className='mr-1'
                           />
                           {errors.email?.message}
+                        </p>
+                      )}
+                      {emailError && (
+                        <p className='text-xs text-red-500 mt-1'>
+                          <FontAwesomeIcon
+                            icon={faCircleExclamation}
+                            className='mr-1'
+                          />
+                          {emailError}
                         </p>
                       )}
                     </div>
