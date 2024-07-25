@@ -4,7 +4,6 @@ import jwt from "jsonwebtoken";
 
 export const signUp: RequestHandler = async (req, res) => {
   try {
-    console.log(req.body);
     const newUser = await User.create({
       username: req.body.username,
       firstName: req.body.firstName,
@@ -27,11 +26,24 @@ export const signUp: RequestHandler = async (req, res) => {
         });
       }
     );
-  } catch (error) {
-    res.status(404).json({
-      status: "fail",
-      message: error,
-    });
+  } catch (error: any) {
+    console.log(error);
+    try {
+      if (error.code && error.code === 11000) {
+        const field = Object.keys(error.keyValue);
+        const code = 409;
+        res.status(code).send({
+          field,
+          message: `An account with that ${field} already exists.`,
+        });
+      }
+    } catch (error) {
+      res.status(500).send("An unknown error occured.");
+    }
+    // res.status(404).json({
+    //   status: "fail",
+    //   message: error,
+    // });
   }
 };
 

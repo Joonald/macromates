@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faX, faBars } from "@fortawesome/free-solid-svg-icons";
-import { useModalDispatch } from "../../utils/modalProvider";
+import { useSignUpModalDispatch } from "../../contexts/signup";
 
 function HeaderLinks() {
   return (
@@ -40,11 +40,10 @@ function HeaderLinks() {
 
 function Header() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const dispatch = useModalDispatch();
+  const dispatch = useSignUpModalDispatch();
 
   function openModal() {
-    dispatch("OPEN_MODAL");
-    console.log("Open Modal");
+    dispatch({ type: "OPEN_MODAL" });
   }
 
   const toggleNavbar = () => {

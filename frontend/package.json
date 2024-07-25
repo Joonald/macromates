@@ -18,11 +18,13 @@
     "axios": "^1.6.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hook-form": "^7.52.1",
     "react-router-dom": "^6.22.0",
     "react-slick": "^0.30.2",
     "slick-carousel": "^1.8.1"
   },
   "devDependencies": {
+    "@hookform/devtools": "^4.3.1",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
     "@types/react-slick": "^0.23.13",
