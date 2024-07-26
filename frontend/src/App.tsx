@@ -12,7 +12,7 @@ import Layout from "./Layout";
 import Discover from "./pages/Discover/Discover";
 import Category from "./pages/Category/Category";
 import { RecipeProvider } from "./contexts/recipes";
-import { SignUpProvider } from "./contexts/signup";
+// import { SignUpProvider } from "./contexts/signup";
 import { IRecipe } from "./interfaces/recipe-interface";
 import { recipeURL } from "./utils/globalVar";
 import SingleRecipe from "./pages/SingleRecipe/SingleRecipe";
@@ -87,11 +87,11 @@ function App() {
 
   return (
     <>
-      <SignUpProvider>
-        <RecipeProvider value={{ isLoading, recipeData }}>
-          <RouterProvider router={router} />
-        </RecipeProvider>
-      </SignUpProvider>
+      {/* <SignUpProvider> */}
+      <RecipeProvider value={{ isLoading, recipeData }}>
+        <RouterProvider router={router} />
+      </RecipeProvider>
+      {/* </SignUpProvider> */}
     </>
   );
 }

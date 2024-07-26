@@ -3,6 +3,7 @@ import { useRecipes } from "../../contexts/recipes";
 import RecipeCard from "../../components/RecipeCard/RecipeCard";
 import Search from "../../components/Search/SearchInput";
 import GridWrapper from "../../components/GridWrapper/GridWrapper";
+import SignUpForm from "../../components/SignUp/SignUpForm";
 
 function Home() {
   const { recipeData, isLoading } = useRecipes();
@@ -51,6 +52,9 @@ function Home() {
             ))}
           />
         )}
+      </section>
+      <section>
+        <SignUpForm />
       </section>
     </main>
   );
