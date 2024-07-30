@@ -3,6 +3,7 @@ import { useRecipes } from "../../contexts/recipes";
 import RecipeCard from "../../components/RecipeCard/RecipeCard";
 import Search from "../../components/Search/SearchInput";
 import GridWrapper from "../../components/GridWrapper/GridWrapper";
+import SignUpForm from "../../components/SignUp/SignUpForm";
 
 function Home() {
   const { recipeData, isLoading } = useRecipes();
@@ -51,6 +52,16 @@ function Home() {
             ))}
           />
         )}
+      </section>
+      <section className='bg-primary-800 pt-4'>
+        <section className='m-4'>
+          <h3 className='text-center font-medium text-2xl lg:text-5xl'>
+            Sign up to get your recipes
+          </h3>
+        </section>
+        <section className='max-w-fit max-h-fit relative'>
+          <SignUpForm />
+        </section>
       </section>
     </main>
   );
