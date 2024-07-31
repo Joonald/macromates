@@ -6,41 +6,57 @@ import {
   useContext,
 } from "react";
 
-export const SignUpModalContext = createContext<boolean>(false);
-export const SignUpModalDispatchContext = createContext<Dispatch<ACTIONTYPE>>(
+export type ModalState = {
+  isLoginOpen: boolean;
+  isSignUpOpen: boolean;
+};
+
+type ACTIONTYPE =
+  | { type: "OPEN_SIGNUP" }
+  | { type: "CLOSE_SIGNUP" }
+  | { type: "OPEN_LOGIN" }
+  | { type: "CLOSE_LOGIN" };
+
+export const ModalContext = createContext<ModalState>({
+  isLoginOpen: false,
+  isSignUpOpen: false,
+});
+export const ModalDispatchContext = createContext<Dispatch<ACTIONTYPE>>(
   () => {}
 );
 
-type ACTIONTYPE = { type: "OPEN_MODAL" } | { type: "CLOSE_MODAL" };
-
-function signupModalReducer(state: boolean, action: ACTIONTYPE): boolean {
+function modalReducer(state: ModalState, action: ACTIONTYPE): ModalState {
   switch (action.type) {
-    case "OPEN_MODAL":
-      return true;
-    case "CLOSE_MODAL":
-      return false;
+    case "OPEN_SIGNUP":
+      return { ...state, isSignUpOpen: true };
+    case "CLOSE_SIGNUP":
+      return { ...state, isSignUpOpen: false };
+    case "OPEN_LOGIN":
+      return { ...state, isLoginOpen: true };
+    case "CLOSE_LOGIN":
+      return { ...state, isLoginOpen: false };
     default:
       throw new Error(`Unhandled action type: ${action}`);
   }
 }
 
 export function SignUpProvider({ children }: { children: ReactNode }) {
-  const initialState = false;
-  const [state, dispatch] = useReducer(signupModalReducer, initialState);
+  const initialState = { isSignUpOpen: false, isLoginOpen: false };
+  const [state, dispatch] = useReducer(modalReducer, initialState);
 
   return (
-    <SignUpModalContext.Provider value={state}>
-      <SignUpModalDispatchContext.Provider value={dispatch}>
+    <ModalContext.Provider value={state}>
+      <ModalDispatchContext.Provider value={dispatch}>
         {children}
-      </SignUpModalDispatchContext.Provider>
-    </SignUpModalContext.Provider>
+      </ModalDispatchContext.Provider>
+    </ModalContext.Provider>
   );
 }
 
 export function useSignUpModalState() {
-  return useContext(SignUpModalContext);
+  return useContext(ModalContext);
 }
 
 export function useSignUpModalDispatch() {
-  return useContext(SignUpModalDispatchContext);
+  return useContext(ModalDispatchContext);
 }

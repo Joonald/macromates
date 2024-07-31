@@ -5,10 +5,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { CustomError } from "../../interfaces/signup-interface";
-import { SignUpProps } from "../../interfaces/signup-interface";
+import { ModalProps } from "../../interfaces/signup-interface";
 import Spinner from "../Spinner";
 
-function SignUpForm({ toggleModal, isModalOpen }: SignUpProps) {
+function SignUpForm({ toggleModal, isModalOpen }: ModalProps) {
   const [emailError, setEmailError] = useState<string | undefined>(undefined);
   const [usernameError, setUsernameError] = useState<string | undefined>(
     undefined
@@ -29,12 +29,11 @@ function SignUpForm({ toggleModal, isModalOpen }: SignUpProps) {
         "http://127.0.0.1:4000/api/v1/users/signup",
         signUpData
       );
-      console.log(response);
       setIsLoading(false);
       if (toggleModal) {
         toggleModal();
       }
-      console.log("Account was created");
+      console.log("Account was created", response);
     } catch (error) {
       const typedError = error as CustomError;
       if (typedError.response?.data.field[0] === "email") {
@@ -68,8 +67,7 @@ function SignUpForm({ toggleModal, isModalOpen }: SignUpProps) {
                 <button
                   onClick={toggleModal}
                   type='button'
-                  className='end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center'
-                  data-modal-hide='signup-modal'>
+                  className='end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center'>
                   <svg
                     className='w-3 h-3'
                     aria-hidden='true'
