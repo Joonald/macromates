@@ -40,7 +40,7 @@ function modalReducer(state: ModalState, action: ACTIONTYPE): ModalState {
   }
 }
 
-export function SignUpProvider({ children }: { children: ReactNode }) {
+export function ModalProvider({ children }: { children: ReactNode }) {
   const initialState = { isSignUpOpen: false, isLoginOpen: false };
   const [state, dispatch] = useReducer(modalReducer, initialState);
 

@@ -12,7 +12,8 @@ import Layout from "./Layout";
 import Discover from "./pages/Discover/Discover";
 import Category from "./pages/Category/Category";
 import { RecipeProvider } from "./contexts/recipes";
-import { SignUpProvider } from "./contexts/signup";
+import { ModalProvider } from "./contexts/modal";
+import { AuthProvider } from "./contexts/auth";
 import { IRecipe } from "./interfaces/RecipeInterfaces";
 import { recipeURL } from "./utils/globalVar";
 import SingleRecipe from "./pages/SingleRecipe/SingleRecipe";
@@ -87,11 +88,13 @@ function App() {
 
   return (
     <>
-      <SignUpProvider>
-        <RecipeProvider value={{ isLoading, recipeData }}>
-          <RouterProvider router={router} />
-        </RecipeProvider>
-      </SignUpProvider>
+      <AuthProvider>
+        <ModalProvider>
+          <RecipeProvider value={{ isLoading, recipeData }}>
+            <RouterProvider router={router} />
+          </RecipeProvider>
+        </ModalProvider>
+      </AuthProvider>
     </>
   );
 }

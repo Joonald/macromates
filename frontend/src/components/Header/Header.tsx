@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faX, faBars } from "@fortawesome/free-solid-svg-icons";
-import { useSignUpModalDispatch } from "../../contexts/signup";
+import { useSignUpModalDispatch } from "../../contexts/modal";
 
 function HeaderLinks() {
   return (

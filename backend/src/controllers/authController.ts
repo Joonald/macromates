@@ -59,9 +59,7 @@ export const login: RequestHandler = async (req, res, next) => {
     }
 
     // Check if user exists && password is correct
-    const user = await User.findOne({ username: username }).select(
-      "+password -firstName -lastName -email"
-    );
+    const user = await User.findOne({ username: username }).select("+password");
     // Calling the user instance method to compare passwords
     // Awaiting the instance method beacuse its an async operation
     if (!user || !(await user!.correctPassword(password, user!.password))) {
@@ -79,6 +77,7 @@ export const login: RequestHandler = async (req, res, next) => {
       status: "success",
       message: "Log in successful",
       token,
+      user,
     });
   } catch (error) {
     res.status(404).json({

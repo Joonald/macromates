@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import {
   useSignUpModalDispatch,
   useSignUpModalState,
-} from "../../contexts/signup";
+} from "../../contexts/modal";
 import SignUpForm from "../SignUp/SignUpForm";
 import LoginForm from "../Login/LoginForm";
 

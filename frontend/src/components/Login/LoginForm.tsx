@@ -2,33 +2,26 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
-import axios from "axios";
 import { LoginUser } from "../../interfaces/UserAuthInterfaces";
 import { ModalProps, LoginError } from "../../interfaces/UserAuthInterfaces";
 import Spinner from "../Spinner";
+import { useAuth } from "../../contexts/auth";
 
 function LoginForm({ toggleModal, isModalOpen }: ModalProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [loginError, setLoginError] = useState<string>("");
   const { register, handleSubmit } = useForm<LoginUser>();
-  const [cookie, setCookie] = useState<string>("");
+  const { login } = useAuth();
 
   async function onSubmit(loginData: LoginUser) {
     setIsLoading(true);
     try {
-      const response = await axios.post(
-        "http://127.0.0.1:4000/api/v1/users/login",
-        loginData
-      );
+      await login(loginData);
       setIsLoading(false);
       if (toggleModal) {
         toggleModal();
       }
-      console.log("You are logged in.", response);
-      setCookie(response.data.token);
-      console.log(cookie);
     } catch (error) {
-      console.log(error, "Could not log you in.");
       const typedError = error as LoginError;
       setLoginError(typedError.response.data.message);
       setIsLoading(false);
