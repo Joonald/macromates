@@ -11,6 +11,7 @@ function LoginForm({ toggleModal, isModalOpen }: ModalProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [loginError, setLoginError] = useState<string>("");
   const { register, handleSubmit } = useForm<LoginUser>();
+  const [cookie, setCookie] = useState<string>("");
 
   async function onSubmit(loginData: LoginUser) {
     setIsLoading(true);
@@ -24,6 +25,8 @@ function LoginForm({ toggleModal, isModalOpen }: ModalProps) {
         toggleModal();
       }
       console.log("You are logged in.", response);
+      setCookie(response.data.token);
+      console.log(cookie);
     } catch (error) {
       console.log(error, "Could not log you in.");
       const typedError = error as LoginError;
