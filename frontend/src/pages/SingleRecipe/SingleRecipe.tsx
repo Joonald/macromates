@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { recipeURL } from "../../utils/globalVar";
-import { IRecipe } from "../../interfaces/recipe-interface";
+import { IRecipe } from "../../interfaces/RecipeInterfaces";
 import Spinner from "../../components/Spinner";
 
 function SingleRecipe() {

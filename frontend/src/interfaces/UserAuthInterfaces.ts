@@ -11,10 +11,19 @@ export interface LoginUser {
   username: string;
   password: string;
 }
+
 export interface CustomError {
   response: {
     data: {
       field: string[];
+      message: string;
+    };
+  };
+}
+
+export interface LoginError {
+  response: {
+    data: {
       message: string;
     };
   };

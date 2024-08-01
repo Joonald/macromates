@@ -3,7 +3,7 @@ import {
   useSignUpModalDispatch,
   useSignUpModalState,
 } from "../../contexts/signup";
-import SignUpForm from "./SignUpForm";
+import SignUpForm from "../SignUp/SignUpForm";
 import LoginForm from "../Login/LoginForm";
 
 type CurrentForm = {

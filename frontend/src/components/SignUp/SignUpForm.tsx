@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { NewUser } from "../../interfaces/signup-interface";
+import { NewUser } from "../../interfaces/UserAuthInterfaces";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
-import { CustomError } from "../../interfaces/signup-interface";
-import { ModalProps } from "../../interfaces/signup-interface";
+import { CustomError } from "../../interfaces/UserAuthInterfaces";
+import { ModalProps } from "../../interfaces/UserAuthInterfaces";
 import Spinner from "../Spinner";
 
 function SignUpForm({ toggleModal, isModalOpen }: ModalProps) {

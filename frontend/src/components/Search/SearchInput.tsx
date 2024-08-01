@@ -1,7 +1,7 @@
 import React, { ChangeEvent, useState, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecipes } from "../../contexts/recipes";
-import { IRecipe } from "../../interfaces/recipe-interface";
+import { IRecipe } from "../../interfaces/RecipeInterfaces";
 import SearchList from "./SearchList";
 
 function SearchInput() {

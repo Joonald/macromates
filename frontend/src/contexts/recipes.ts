@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { RecipeContextType } from "../interfaces/recipe-interface";
+import { RecipeContextType } from "../interfaces/RecipeInterfaces";
 
 export const RecipeContext = createContext<RecipeContextType>({
   recipeData: [

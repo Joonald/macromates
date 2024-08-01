@@ -1,5 +1,5 @@
 import React from "react";
-import { IRecipe } from "../../interfaces/recipe-interface";
+import { IRecipe } from "../../interfaces/RecipeInterfaces";
 import { Link } from "react-router-dom";
 
 function RecipeCard({ recipe }: { recipe: IRecipe }) {

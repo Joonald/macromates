@@ -1,20 +1,16 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
-import { LoginUser } from "../../interfaces/signup-interface";
-// import { CustomError } from "../../interfaces/signup-interface";
-import { ModalProps } from "../../interfaces/signup-interface";
+import { LoginUser } from "../../interfaces/UserAuthInterfaces";
+import { ModalProps, LoginError } from "../../interfaces/UserAuthInterfaces";
 import Spinner from "../Spinner";
 
 function LoginForm({ toggleModal, isModalOpen }: ModalProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const {
-    register,
-    handleSubmit,
-    // formState: { errors },
-  } = useForm<LoginUser>();
+  const [loginError, setLoginError] = useState<string>("");
+  const { register, handleSubmit } = useForm<LoginUser>();
 
   async function onSubmit(loginData: LoginUser) {
     setIsLoading(true);
@@ -30,6 +26,8 @@ function LoginForm({ toggleModal, isModalOpen }: ModalProps) {
       console.log("You are logged in.", response);
     } catch (error) {
       console.log(error, "Could not log you in.");
+      const typedError = error as LoginError;
+      setLoginError(typedError.response.data.message);
       setIsLoading(false);
     }
   }
@@ -104,26 +102,8 @@ function LoginForm({ toggleModal, isModalOpen }: ModalProps) {
                   className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-400 focus:border-primary-400 block w-full p-2.5'
                   autoComplete='username'
                 />
-                {/* {errors.username?.message && (
-                  <p className='text-xs text-red-500 mt-1'>
-                    <FontAwesomeIcon
-                      icon={faCircleExclamation}
-                      className='mr-1'
-                    />
-                    {errors.username?.message}
-                  </p>
-                )}
-                {usernameError && (
-                  <p className='text-xs text-red-500 mt-1'>
-                    <FontAwesomeIcon
-                      icon={faCircleExclamation}
-                      className='mr-1'
-                    />
-                    {usernameError}
-                  </p>
-                )} */}
               </div>
-              <div className='flex gap-2'>
+              <div>
                 <div className='w-full'>
                   <label
                     htmlFor='password'
@@ -144,17 +124,17 @@ function LoginForm({ toggleModal, isModalOpen }: ModalProps) {
                     className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-400 focus:border-primary-400 block w-full p-2.5'
                     autoComplete='new-password'
                   />
-                  {/* {errors.password?.message && (
-                    <p className='text-xs text-red-500 mt-1'>
-                      <FontAwesomeIcon
-                        icon={faCircleExclamation}
-                        className='mr-1'
-                      />
-                      {errors.password?.message}
-                    </p>
-                  )} */}
                 </div>
               </div>
+              {loginError && (
+                <p className='text-xs text-red-500 mt-1'>
+                  <FontAwesomeIcon
+                    icon={faCircleExclamation}
+                    className='mr-1'
+                  />
+                  {loginError}
+                </p>
+              )}
               <button
                 type='submit'
                 className='w-full text-white bg-primary-800 hover:bg-primary-400 focus:ring-4 focus:outline-none focus:ring-primary-400 font-medium rounded-lg text-sm px-5 py-2.5 text-center'>
