@@ -34,6 +34,15 @@ function HeaderLinks() {
           Discover
         </NavLink>
       </li>
+      <li>
+        <NavLink
+          className={({ isActive }) =>
+            isActive ? "text-green-600" : "text-black-800"
+          }
+          to='/profile'>
+          Profile
+        </NavLink>
+      </li>
     </ul>
   );
 }

@@ -18,6 +18,9 @@ import { IRecipe } from "./interfaces/RecipeInterfaces";
 import { recipeURL } from "./utils/globalVar";
 import SingleRecipe from "./pages/SingleRecipe/SingleRecipe";
 import SearchResult from "./pages/SearchResult/SearchResult";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+import Profile from "./pages/Profile/Profile";
+import SignUp from "./pages/SignUp/SignUp";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -53,6 +56,16 @@ const router = createBrowserRouter(
         path='search/:searchId'
         element={<SearchResult />}
       />
+      <Route
+        path='signup'
+        element={<SignUp />}
+      />
+      <Route element={<ProtectedRoute />}>
+        <Route
+          path='profile'
+          element={<Profile />}
+        />
+      </Route>
     </Route>
   )
 );

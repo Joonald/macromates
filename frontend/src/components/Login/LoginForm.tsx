@@ -6,12 +6,15 @@ import { LoginUser } from "../../interfaces/UserAuthInterfaces";
 import { ModalProps, LoginError } from "../../interfaces/UserAuthInterfaces";
 import Spinner from "../Spinner";
 import { useAuth } from "../../contexts/auth";
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function LoginForm({ toggleModal, isModalOpen }: ModalProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [loginError, setLoginError] = useState<string>("");
   const { register, handleSubmit } = useForm<LoginUser>();
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   async function onSubmit(loginData: LoginUser) {
     setIsLoading(true);
@@ -21,6 +24,7 @@ function LoginForm({ toggleModal, isModalOpen }: ModalProps) {
       if (toggleModal) {
         toggleModal();
       }
+      navigate("/profile");
     } catch (error) {
       const typedError = error as LoginError;
       setLoginError(typedError.response.data.message);
@@ -137,6 +141,15 @@ function LoginForm({ toggleModal, isModalOpen }: ModalProps) {
                 Sign In
               </button>
             </form>
+            <p className='mt-2 text-xs'>
+              Don't have an account?{" "}
+              <Link
+                onClick={toggleModal}
+                className='text-primary-800'
+                to='signup'>
+                Sign Up
+              </Link>
+            </p>
           </div>
         </div>
       </div>
