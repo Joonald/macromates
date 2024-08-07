@@ -23,6 +23,9 @@ function Footer() {
             <li>
               <Link to='/discover'>Discover</Link>
             </li>
+            <li>
+              <Link to='/signup'>Sign Up</Link>
+            </li>
           </ul>
         </section>
         <hr className='my-6 border-gray-200 sm:mx-auto lg:my-8' />

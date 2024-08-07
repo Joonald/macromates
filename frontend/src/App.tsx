@@ -12,11 +12,15 @@ import Layout from "./Layout";
 import Discover from "./pages/Discover/Discover";
 import Category from "./pages/Category/Category";
 import { RecipeProvider } from "./contexts/recipes";
-import { SignUpProvider } from "./contexts/signup";
-import { IRecipe } from "./interfaces/recipe-interface";
+import { ModalProvider } from "./contexts/modal";
+import { AuthProvider } from "./contexts/auth";
+import { IRecipe } from "./interfaces/RecipeInterfaces";
 import { recipeURL } from "./utils/globalVar";
 import SingleRecipe from "./pages/SingleRecipe/SingleRecipe";
 import SearchResult from "./pages/SearchResult/SearchResult";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+import Profile from "./pages/Profile/Profile";
+import SignUp from "./pages/SignUp/SignUp";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -52,6 +56,16 @@ const router = createBrowserRouter(
         path='search/:searchId'
         element={<SearchResult />}
       />
+      <Route
+        path='signup'
+        element={<SignUp />}
+      />
+      <Route element={<ProtectedRoute />}>
+        <Route
+          path='profile'
+          element={<Profile />}
+        />
+      </Route>
     </Route>
   )
 );
@@ -87,11 +101,13 @@ function App() {
 
   return (
     <>
-      <SignUpProvider>
-        <RecipeProvider value={{ isLoading, recipeData }}>
-          <RouterProvider router={router} />
-        </RecipeProvider>
-      </SignUpProvider>
+      <AuthProvider>
+        <ModalProvider>
+          <RecipeProvider value={{ isLoading, recipeData }}>
+            <RouterProvider router={router} />
+          </RecipeProvider>
+        </ModalProvider>
+      </AuthProvider>
     </>
   );
 }

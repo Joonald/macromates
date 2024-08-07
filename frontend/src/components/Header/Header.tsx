@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faX, faBars } from "@fortawesome/free-solid-svg-icons";
-import { useSignUpModalDispatch } from "../../contexts/signup";
+import { useSignUpModalDispatch } from "../../contexts/modal";
 
 function HeaderLinks() {
   return (
@@ -34,6 +34,15 @@ function HeaderLinks() {
           Discover
         </NavLink>
       </li>
+      <li>
+        <NavLink
+          className={({ isActive }) =>
+            isActive ? "text-green-600" : "text-black-800"
+          }
+          to='/profile'>
+          Profile
+        </NavLink>
+      </li>
     </ul>
   );
 }
@@ -42,8 +51,13 @@ function Header() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const dispatch = useSignUpModalDispatch();
 
-  function openModal() {
-    dispatch({ type: "OPEN_MODAL" });
+  function openModal(type: string) {
+    if (type === "signup") {
+      dispatch({ type: "OPEN_SIGNUP" });
+    }
+    if (type === "login") {
+      dispatch({ type: "OPEN_LOGIN" });
+    }
   }
 
   const toggleNavbar = () => {
@@ -60,13 +74,13 @@ function Header() {
           <HeaderLinks />
         </nav>
         <div className='order-2'>
-          <button className='hidden py-2 px-4 rounded-2xl bg-gray-200 text-sm md:inline md: mr-2'>
+          <button
+            onClick={() => openModal("login")}
+            className='hidden py-2 px-4 rounded-2xl bg-gray-200 text-sm md:inline md: mr-2'>
             Log In
           </button>
           <button
-            onClick={openModal}
-            data-modal-target='signup-modal'
-            data-modal-show='signup-modal'
+            onClick={() => openModal("signup")}
             className='py-2 px-4 bg-primary-800 rounded-2xl text-sm text-slate-50'>
             Sign Up
           </button>

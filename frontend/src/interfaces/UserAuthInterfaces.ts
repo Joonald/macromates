@@ -7,6 +7,11 @@ export interface NewUser {
   passwordConfirm: string;
 }
 
+export interface LoginUser {
+  username: string;
+  password: string;
+}
+
 export interface CustomError {
   response: {
     data: {
@@ -16,7 +21,15 @@ export interface CustomError {
   };
 }
 
-export interface SignUpProps {
+export interface LoginError {
+  response: {
+    data: {
+      message: string;
+    };
+  };
+}
+
+export interface ModalProps {
   isModalOpen?: boolean;
   toggleModal?: () => void;
 }
