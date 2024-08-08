@@ -8,7 +8,6 @@ function HeaderLink({ mobile = false, toggleNavbar, to = "" }: NavLinkProps) {
       onClick={() => {
         if (mobile) {
           if (toggleNavbar) toggleNavbar();
-          console.log(to.replace(" ", ""));
         }
       }}
       className={({ isActive }) =>
