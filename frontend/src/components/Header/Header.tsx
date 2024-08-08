@@ -1,10 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faX, faBars } from "@fortawesome/free-solid-svg-icons";
 import { useSignUpModalDispatch } from "../../contexts/modal";
+import { useAuth } from "../../contexts/auth";
+import useClickOutside from "../../hooks/useClickOutside";
 
-function HeaderLinks() {
+type HeaderLinkProps = {
+  mobile?: boolean;
+};
+
+function HeaderLinks({ mobile = false }: HeaderLinkProps) {
+  const { isAuthenticated } = useAuth();
+
   return (
     <ul className='md:w-full md:justify-between md:flex md: gap-8'>
       <li>
@@ -34,15 +42,28 @@ function HeaderLinks() {
           Discover
         </NavLink>
       </li>
-      <li>
-        <NavLink
-          className={({ isActive }) =>
-            isActive ? "text-green-600" : "text-black-800"
-          }
-          to='/profile'>
-          Profile
-        </NavLink>
-      </li>
+      {mobile && (
+        <li>
+          <NavLink
+            className={({ isActive }) =>
+              isActive ? "text-green-600" : "text-black-800"
+            }
+            to='/signup'>
+            Sign Up
+          </NavLink>
+        </li>
+      )}
+      {isAuthenticated && (
+        <li>
+          <NavLink
+            className={({ isActive }) =>
+              isActive ? "text-green-600" : "text-black-800"
+            }
+            to='/profile'>
+            Profile
+          </NavLink>
+        </li>
+      )}
     </ul>
   );
 }
@@ -50,6 +71,8 @@ function HeaderLinks() {
 function Header() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const dispatch = useSignUpModalDispatch();
+  const { isAuthenticated, logout } = useAuth();
+  const navRef = useRef<HTMLDivElement | null>(null);
 
   function openModal(type: string) {
     if (type === "signup") {
@@ -64,6 +87,13 @@ function Header() {
     setIsOpen(!isOpen);
   };
 
+  useClickOutside({
+    ref: navRef,
+    callback: () => {
+      if (isOpen) toggleNavbar();
+    },
+  });
+
   return (
     <header className=' box-content h-12 font-poppins sticky top-0 z-30 mx-auto flex flex-wrap items-center justify-between md:justify-between border-b border-primary-800 uppercase p-4 bg-white'>
       <Link to='/'>
@@ -73,18 +103,28 @@ function Header() {
         <nav className='hidden  md:flex'>
           <HeaderLinks />
         </nav>
-        <div className='order-2'>
-          <button
-            onClick={() => openModal("login")}
-            className='hidden py-2 px-4 rounded-2xl bg-gray-200 text-sm md:inline md: mr-2'>
-            Log In
-          </button>
-          <button
-            onClick={() => openModal("signup")}
-            className='py-2 px-4 bg-primary-800 rounded-2xl text-sm text-slate-50'>
-            Sign Up
-          </button>
-        </div>
+        {isAuthenticated ? (
+          <div>
+            <button
+              onClick={logout}
+              className='py-2 px-4 rounded-2xl bg-gray-200 text-sm md:inline md: mr-2'>
+              Log Out
+            </button>
+          </div>
+        ) : (
+          <div className='order-2'>
+            <button
+              onClick={() => openModal("login")}
+              className='hidden py-2 px-4 rounded-2xl bg-gray-200 text-sm md:inline md: mr-2'>
+              Log In
+            </button>
+            <button
+              onClick={() => openModal("signup")}
+              className='py-2 px-4 bg-primary-800 rounded-2xl text-sm text-slate-50'>
+              Sign Up
+            </button>
+          </div>
+        )}
         <div className='md:hidden order-last'>
           <button onClick={toggleNavbar}>
             {isOpen ? (
@@ -105,10 +145,11 @@ function Header() {
       </div>
       {isOpen && (
         <nav
+          ref={navRef}
           className={`flex basis-full flex-col items-center transition-all duration-300 ease-out border-t border-primary-800 pt-4 pb-4 absolute left-0 right-0 top-20 z-5 bg-white border-b ${
             isOpen ? "animate-fadeIn" : "animate-fadeOut hidden"
           }`}>
-          <HeaderLinks />
+          <HeaderLinks mobile={true} />
         </nav>
       )}
     </header>

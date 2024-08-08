@@ -5,6 +5,7 @@ import {
 } from "../../contexts/modal";
 import SignUpForm from "../SignUp/SignUpForm";
 import LoginForm from "../Login/LoginForm";
+import useClickOutside from "../../hooks/useClickOutside";
 
 type CurrentForm = {
   type: "login" | "signup";
@@ -32,22 +33,12 @@ export default function SignUpModal() {
     }
   }
 
-  useEffect(() => {
-    // Function to close the signup modal when clicking outside of it
-    const handleClickOutside = (event: MouseEvent) => {
-      if (formRef.current && !formRef.current.contains(event.target as Node)) {
-        if (isSignUpOpen) toggleModal({ type: "signup" });
-        if (isLoginOpen) toggleModal({ type: "login" });
-      }
-    };
-
-    // Add event listener to detect clicks outside the modal
-    document.addEventListener("mousedown", handleClickOutside);
-
-    // Cleanup function to remove the event listener on component unmount
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+  useClickOutside({
+    ref: formRef,
+    callback: () => {
+      if (isSignUpOpen) toggleModal({ type: "signup" });
+      if (isLoginOpen) toggleModal({ type: "login" });
+    },
   });
 
   useEffect(() => {
