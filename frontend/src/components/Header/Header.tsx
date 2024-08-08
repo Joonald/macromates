@@ -1,67 +1,54 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Link, NavLink } from "react-router-dom";
+import React, { useState, useRef } from "react";
+import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faX, faBars } from "@fortawesome/free-solid-svg-icons";
 import { useSignUpModalDispatch } from "../../contexts/modal";
 import { useAuth } from "../../contexts/auth";
 import useClickOutside from "../../hooks/useClickOutside";
+import HeaderLink from "../HeaderLink/HeaderLink";
+import { HeaderLinkProps } from "../../interfaces/HeaderInterface";
 
-type HeaderLinkProps = {
-  mobile?: boolean;
-};
-
-function HeaderLinks({ mobile = false }: HeaderLinkProps) {
+function HeaderLinks({ mobile = false, toggleNavbar }: HeaderLinkProps) {
   const { isAuthenticated } = useAuth();
 
   return (
     <ul className='md:w-full md:justify-between md:flex md: gap-8'>
       <li>
-        <NavLink
-          className={({ isActive }) =>
-            isActive ? "text-green-600" : "text-black-800"
-          }
-          to='/'>
-          Home
-        </NavLink>
+        <HeaderLink
+          mobile={mobile}
+          toggleNavbar={toggleNavbar}
+        />
       </li>
       <li>
-        <NavLink
-          className={({ isActive }) =>
-            isActive ? "text-green-600" : "text-black-800"
-          }
-          to='/about'>
-          About
-        </NavLink>
+        <HeaderLink
+          mobile={mobile}
+          toggleNavbar={toggleNavbar}
+          to='about'
+        />
       </li>
       <li>
-        <NavLink
-          className={({ isActive }) =>
-            isActive ? "text-green-600" : "text-black-800"
-          }
-          to='/discover'>
-          Discover
-        </NavLink>
+        <HeaderLink
+          mobile={mobile}
+          toggleNavbar={toggleNavbar}
+          to='discover'
+        />
       </li>
       {mobile && (
         <li>
-          <NavLink
-            className={({ isActive }) =>
-              isActive ? "text-green-600" : "text-black-800"
-            }
-            to='/signup'>
-            Sign Up
-          </NavLink>
+          <HeaderLink
+            mobile={mobile}
+            toggleNavbar={toggleNavbar}
+            to='sign up'
+          />
         </li>
       )}
       {isAuthenticated && (
         <li>
-          <NavLink
-            className={({ isActive }) =>
-              isActive ? "text-green-600" : "text-black-800"
-            }
-            to='/profile'>
-            Profile
-          </NavLink>
+          <HeaderLink
+            mobile={mobile}
+            toggleNavbar={toggleNavbar}
+            to='profile'
+          />
         </li>
       )}
     </ul>
@@ -95,7 +82,9 @@ function Header() {
   });
 
   return (
-    <header className=' box-content h-12 font-poppins sticky top-0 z-30 mx-auto flex flex-wrap items-center justify-between md:justify-between border-b border-primary-800 uppercase p-4 bg-white'>
+    <header
+      ref={navRef}
+      className=' box-content h-12 font-poppins sticky top-0 z-30 mx-auto flex flex-wrap items-center justify-between md:justify-between border-b border-primary-800 uppercase p-4 bg-white'>
       <Link to='/'>
         <h1 className='text-xl text-primary-800'>MacroMates</h1>
       </Link>
@@ -115,12 +104,12 @@ function Header() {
           <div className='order-2'>
             <button
               onClick={() => openModal("login")}
-              className='hidden py-2 px-4 rounded-2xl bg-gray-200 text-sm md:inline md: mr-2'>
+              className='py-2 px-4 rounded-2xl bg-gray-200 text-sm md:inline md: mr-2'>
               Log In
             </button>
             <button
               onClick={() => openModal("signup")}
-              className='py-2 px-4 bg-primary-800 rounded-2xl text-sm text-slate-50'>
+              className='hidden py-2 px-4 bg-primary-800 rounded-2xl text-sm text-slate-50'>
               Sign Up
             </button>
           </div>
@@ -145,11 +134,13 @@ function Header() {
       </div>
       {isOpen && (
         <nav
-          ref={navRef}
           className={`flex basis-full flex-col items-center transition-all duration-300 ease-out border-t border-primary-800 pt-4 pb-4 absolute left-0 right-0 top-20 z-5 bg-white border-b ${
             isOpen ? "animate-fadeIn" : "animate-fadeOut hidden"
           }`}>
-          <HeaderLinks mobile={true} />
+          <HeaderLinks
+            mobile={true}
+            toggleNavbar={toggleNavbar}
+          />
         </nav>
       )}
     </header>
