@@ -78,14 +78,14 @@ JWT_SECRET=your_jwt_secret
 
 ```bash
 cd backend
-npm run start
+npm run dev
 ```
 
 - **Frontend:**
 
 ```bash
 cd frontend
-npm run start
+npm run dev
 ```
 
 The application should now be running on http://localhost:5173.

@@ -1,11 +1,11 @@
 import React, { createContext, ReactNode, useState, useContext } from "react";
-import { LoginUser } from "../interfaces/UserAuthInterfaces";
+import { LoginUser, AuthUser } from "../interfaces/UserAuthInterfaces";
 import axios from "axios";
 import Cookies from "js-cookie";
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  user: LoginUser | null;
+  user: AuthUser | null;
   login: (loginData: LoginUser) => Promise<void>;
   logout: () => void;
 }
@@ -19,16 +19,16 @@ export const AuthContext = createContext<AuthContextType>({
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [user, setUser] = useState<LoginUser | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
 
   const login = async (loginData: LoginUser) => {
     try {
       const response = await axios.post(
         "http://127.0.0.1:4000/api/v1/users/login",
-        loginData
+        loginData,
+        { withCredentials: true }
       );
-      const { token, user } = response.data;
-      Cookies.set("token", token, { expires: 1 });
+      const { user } = response.data;
       setUser(user);
       setIsAuthenticated(true);
       console.log("You are logged in.", response, `I am user ${user.username}`);
