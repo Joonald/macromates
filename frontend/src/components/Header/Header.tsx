@@ -104,12 +104,12 @@ function Header() {
           <div className='order-2'>
             <button
               onClick={() => openModal("login")}
-              className='py-2 px-4 rounded-2xl bg-gray-200 text-sm md:inline md: mr-2'>
+              className='py-2 px-4 rounded-2xl bg-gray-200 text-sm md: mr-2'>
               Log In
             </button>
             <button
               onClick={() => openModal("signup")}
-              className='hidden py-2 px-4 bg-primary-800 rounded-2xl text-sm text-slate-50'>
+              className='hidden py-2 px-4 bg-primary-800 rounded-2xl text-sm text-slate-50 md:inline'>
               Sign Up
             </button>
           </div>

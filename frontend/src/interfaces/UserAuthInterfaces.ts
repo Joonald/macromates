@@ -12,6 +12,10 @@ export interface LoginUser {
   password: string;
 }
 
+export interface AuthUser extends NewUser {
+  _id: number;
+}
+
 export interface CustomError {
   response: {
     data: {

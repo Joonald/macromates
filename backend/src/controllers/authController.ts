@@ -22,11 +22,17 @@ export const signUp: RequestHandler = async (req, res) => {
     });
     // Signs the token and sends the server
     const token = signToken(newUser._id);
+    const cookieOptions = {
+      // secure: true,
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000,
+    };
+    res.cookie("jwt", token, cookieOptions);
     res.status(201).json({
       status: "success",
       message: "New user has been created",
       token,
-      data: newUser,
+      user: newUser,
     });
   } catch (error: any) {
     try {
@@ -73,11 +79,18 @@ export const login: RequestHandler = async (req, res, next) => {
 
     // Signs the token and sends the server
     const token = signToken(user._id);
+    const cookieOptions = {
+      // secure: true,
+      httpOnly: true,
+      maxAge: 1 * 24 * 60 * 60 * 1000,
+    };
+    res.cookie("jwt", token, cookieOptions);
+    console.log(user);
     res.status(200).json({
       status: "success",
       message: "Log in successful",
       token,
-      user,
+      user: user,
     });
   } catch (error) {
     res.status(404).json({
