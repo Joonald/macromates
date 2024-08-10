@@ -4,6 +4,7 @@ import connectDB from "./config/db";
 import recipeRouter from "./routes/recipeRoutes";
 import userRouter from "./routes/userRoutes";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
 dotenv.config({ path: "././config.env" });
 
@@ -25,12 +26,20 @@ app.use(
 
 // json body parser
 app.use(express.json());
+app.use(cookieParser());
 
 // ROUTE
 app.get("/", (req, res) => {
   res.send("Hello World");
 });
 
+app.use((req, res, next) => {
+  // req.requestTime = new Date().toISOString();
+  console.log(req.cookies, " + request cookies");
+  console.log(req.headers, " + request headers");
+
+  next();
+});
 // MOUNTING ROUTERS
 app.use("/api/v1/recipes", recipeRouter);
 app.use("/api/v1/users", userRouter);

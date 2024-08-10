@@ -6,6 +6,7 @@ import Cookies from "js-cookie";
 interface AuthContextType {
   isAuthenticated: boolean;
   user: AuthUser | null;
+  accessToken: string | null;
   login: (loginData: LoginUser) => Promise<void>;
   logout: () => void;
 }
@@ -13,6 +14,7 @@ interface AuthContextType {
 export const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   user: null,
+  accessToken: null,
   login: async () => {},
   logout: () => {},
 });
@@ -20,6 +22,7 @@ export const AuthContext = createContext<AuthContextType>({
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [user, setUser] = useState<AuthUser | null>(null);
+  const [accessToken, setToken] = useState<string | null>(null);
 
   const login = async (loginData: LoginUser) => {
     try {
@@ -28,7 +31,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loginData,
         { withCredentials: true }
       );
-      const { user } = response.data;
+      const { user, accessToken } = response.data;
+      Cookies.set("accessToken", accessToken, { expires: 1 });
+      setToken(accessToken);
       setUser(user);
       setIsAuthenticated(true);
       console.log("You are logged in.", response, `I am user ${user.username}`);
@@ -38,13 +43,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = () => {
-    Cookies.remove("token");
+    Cookies.remove("accessToken");
     setIsAuthenticated(false);
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, user, login, logout, accessToken }}>
       {children}
     </AuthContext.Provider>
   );
