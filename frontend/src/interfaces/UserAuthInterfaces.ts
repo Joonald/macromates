@@ -14,6 +14,7 @@ export interface LoginUser {
 
 export interface AuthUser extends NewUser {
   _id: number;
+  accessToken: string;
 }
 
 export interface CustomError {

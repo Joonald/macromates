@@ -1,11 +1,12 @@
-import { RequestHandler } from "express";
+import { NextFunction, RequestHandler } from "express";
 import User from "../models/userModels";
 import jwt from "jsonwebtoken";
 import { Types } from "mongoose";
+import { CookieOptions } from "express-serve-static-core";
 
 const signToken = (id: Types.ObjectId) => {
   return jwt.sign({ id: id }, process.env.JWT_SECRET!, {
-    expiresIn: process.env.JWT_EXPIRE_IN,
+    expiresIn: 1 * 24 * 60 * 60 * 1000,
   });
 };
 
@@ -21,33 +22,33 @@ export const signUp: RequestHandler = async (req, res) => {
       passwordConfirm: req.body.passwordConfirm,
     });
     // Signs the token and sends the server
-    const token = signToken(newUser._id);
+    const accessToken = signToken(newUser._id);
+    const refreshToken = signToken(newUser._id);
     const cookieOptions = {
       // secure: true,
+      domain: undefined,
       httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000,
+      maxAge: Number(process.env.JWT_COOKIES_EXPIRES_IN) * 24 * 60 * 60 * 1000,
     };
-    res.cookie("jwt", token, cookieOptions);
+    res.cookie("jwt", refreshToken, cookieOptions);
     res.status(201).json({
       status: "success",
       message: "New user has been created",
-      token,
+      accessToken,
       user: newUser,
     });
+    console.log(req.headers, "request headers");
   } catch (error: any) {
-    try {
-      // Checking mongodb error to provide user feedback if duplicate username or email
-      if (error.code && error.code === 11000) {
-        const field = Object.keys(error.keyValue);
-        const code = 409;
-        res.status(code).send({
-          field,
-          message: `An account with that ${field} already exists.`,
-        });
-      }
-    } catch (error) {
-      res.status(500).send("An unknown error occured.");
+    // Checking mongodb error to provide user feedback if duplicate username or email
+    if (error.code && error.code === 11000) {
+      const field = Object.keys(error.keyValue);
+      const code = 409;
+      return res.status(code).send({
+        field,
+        message: `An account with that ${field} already exists.`,
+      });
     }
+    return res.status(500).send("An unknown error occured.");
   }
 };
 
@@ -78,24 +79,79 @@ export const login: RequestHandler = async (req, res, next) => {
     }
 
     // Signs the token and sends the server
-    const token = signToken(user._id);
-    const cookieOptions = {
-      // secure: true,
+    const accessToken = signToken(user._id);
+    const refreshToken = signToken(user._id);
+
+    const cookieOption: CookieOptions = {
+      secure: true,
       httpOnly: true,
-      maxAge: 1 * 24 * 60 * 60 * 1000,
+      expires: new Date(
+        Date.now() +
+          Number(process.env.JWT_COOKIES_EXPIRES_IN) * 24 * 60 * 60 * 1000
+      ),
+      sameSite: "none",
     };
-    res.cookie("jwt", token, cookieOptions);
-    console.log(user);
+
+    res.cookie("jwt", refreshToken, cookieOption);
     res.status(200).json({
       status: "success",
       message: "Log in successful",
-      token,
-      user: user,
+      accessToken,
+      user,
     });
   } catch (error) {
     res.status(404).json({
       status: "Incorrect username or password.",
       message: error,
+    });
+  }
+};
+
+export const me: RequestHandler = async (req, res, next) => {
+  res.status(200).json({
+    message: "success",
+    user: req.user,
+  });
+};
+
+export const protectRoute: RequestHandler = async (req, res, next) => {
+  try {
+    console.log(req.cookies, req.headers);
+    // 1 Getting token and check if its there\
+    let token;
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith("Bearer")
+    ) {
+      token = req.headers.authorization.split(" ")[1];
+    } else if (req.cookies.jwt) {
+      token = req.cookies.jwt;
+    }
+    if (!token)
+      return res.status(401).json({
+        status: "fail",
+        message: "you are not logged in",
+      });
+    // 2 Verifify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
+      id: string;
+      iat: number;
+      exp: number;
+    };
+    // 3 Check if user still exists
+    const user = await User.findById(decoded.id);
+    if (!user) {
+      return res.status(401).json({
+        status: "fail",
+        message: "User no longer exists",
+      });
+    }
+    req.user = user;
+    next();
+  } catch (error) {
+    res.status(500).json({
+      status: "fail",
+      message: "Unknown error has occured",
     });
   }
 };

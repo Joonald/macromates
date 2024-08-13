@@ -5,14 +5,20 @@ import Cookies from "js-cookie";
 
 interface AuthContextType {
   isAuthenticated: boolean;
+  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
   user: AuthUser | null;
+  setUser: React.Dispatch<React.SetStateAction<AuthUser | null>>;
+  accessToken: string | null;
   login: (loginData: LoginUser) => Promise<void>;
   logout: () => void;
 }
 
 export const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
+  setIsAuthenticated: () => {},
   user: null,
+  setUser: () => {},
+  accessToken: null,
   login: async () => {},
   logout: () => {},
 });
@@ -20,6 +26,7 @@ export const AuthContext = createContext<AuthContextType>({
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [user, setUser] = useState<AuthUser | null>(null);
+  const [accessToken, setToken] = useState<string | null>(null);
 
   const login = async (loginData: LoginUser) => {
     try {
@@ -28,7 +35,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loginData,
         { withCredentials: true }
       );
-      const { user } = response.data;
+      const { user, accessToken } = response.data;
+      // cookie expires in 10 mins
+      Cookies.set("accessToken", accessToken, { expires: 10 / (24 * 60) });
+      setToken(accessToken);
       setUser(user);
       setIsAuthenticated(true);
       console.log("You are logged in.", response, `I am user ${user.username}`);
@@ -38,13 +48,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = () => {
-    Cookies.remove("token");
+    Cookies.remove("accessToken");
     setIsAuthenticated(false);
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        isAuthenticated,
+        user,
+        login,
+        logout,
+        accessToken,
+        setIsAuthenticated,
+        setUser,
+      }}>
       {children}
     </AuthContext.Provider>
   );

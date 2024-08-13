@@ -9,25 +9,29 @@ import { ModalProps } from "../../interfaces/UserAuthInterfaces";
 import Spinner from "../Spinner";
 
 function SignUpForm({ toggleModal, isModalOpen }: ModalProps) {
-  const [emailError, setEmailError] = useState<string | undefined>(undefined);
-  const [usernameError, setUsernameError] = useState<string | undefined>(
-    undefined
-  );
+  // const [emailError, setEmailError] = useState<string | undefined>(undefined);
+  // const [usernameError, setUsernameError] = useState<string | undefined>(
+  //   undefined
+  // );
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const {
     register,
     handleSubmit,
     formState: { errors },
     watch,
+    setError,
+    clearErrors,
   } = useForm<NewUser>();
   const userPassword = watch("password", "");
 
   async function onSubmit(signUpData: NewUser) {
     setIsLoading(true);
+    clearErrors();
     try {
       const response = await axios.post(
         "http://127.0.0.1:4000/api/v1/users/signup",
-        signUpData
+        signUpData,
+        { withCredentials: true }
       );
       setIsLoading(false);
       if (toggleModal) {
@@ -35,15 +39,20 @@ function SignUpForm({ toggleModal, isModalOpen }: ModalProps) {
       }
       console.log("Account was created", response);
     } catch (error) {
-      const typedError = error as CustomError;
-      if (typedError.response?.data.field[0] === "email") {
-        setEmailError(typedError.response?.data.message);
-      }
-      if (typedError.response?.data.field[0] === "username") {
-        setUsernameError(typedError.response?.data.message);
-      }
-      console.log("Account was not created");
       setIsLoading(false);
+      const typedError = error as CustomError;
+
+      if (typedError.response?.data) {
+        const { field, message } = typedError.response.data;
+
+        // Handle specific field errors sent from the backend
+        if (field.includes("email")) {
+          setError("email", { type: "server", message });
+        }
+        if (field.includes("username")) {
+          setError("username", { type: "server", message });
+        }
+      }
     }
   }
 
@@ -126,7 +135,7 @@ function SignUpForm({ toggleModal, isModalOpen }: ModalProps) {
                     {errors.username?.message}
                   </p>
                 )}
-                {usernameError && (
+                {/* {usernameError && (
                   <p className='text-xs text-red-500 mt-1'>
                     <FontAwesomeIcon
                       icon={faCircleExclamation}
@@ -134,7 +143,7 @@ function SignUpForm({ toggleModal, isModalOpen }: ModalProps) {
                     />
                     {usernameError}
                   </p>
-                )}
+                )} */}
               </div>
               <div className='flex gap-2'>
                 <div className='w-full'>
@@ -231,7 +240,7 @@ function SignUpForm({ toggleModal, isModalOpen }: ModalProps) {
                     {errors.email?.message}
                   </p>
                 )}
-                {emailError && (
+                {/* {emailError && (
                   <p className='text-xs text-red-500 mt-1'>
                     <FontAwesomeIcon
                       icon={faCircleExclamation}
@@ -239,7 +248,7 @@ function SignUpForm({ toggleModal, isModalOpen }: ModalProps) {
                     />
                     {emailError}
                   </p>
-                )}
+                )} */}
               </div>
               <div className='flex gap-2'>
                 <div className='w-full'>
