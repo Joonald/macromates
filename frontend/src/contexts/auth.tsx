@@ -5,7 +5,9 @@ import Cookies from "js-cookie";
 
 interface AuthContextType {
   isAuthenticated: boolean;
+  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
   user: AuthUser | null;
+  setUser: React.Dispatch<React.SetStateAction<AuthUser | null>>;
   accessToken: string | null;
   login: (loginData: LoginUser) => Promise<void>;
   logout: () => void;
@@ -13,7 +15,9 @@ interface AuthContextType {
 
 export const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
+  setIsAuthenticated: () => {},
   user: null,
+  setUser: () => {},
   accessToken: null,
   login: async () => {},
   logout: () => {},
@@ -32,7 +36,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         { withCredentials: true }
       );
       const { user, accessToken } = response.data;
-      Cookies.set("accessToken", accessToken, { expires: 1 });
+      // cookie expires in 10 mins
+      Cookies.set("accessToken", accessToken, { expires: 10 / (24 * 60) });
       setToken(accessToken);
       setUser(user);
       setIsAuthenticated(true);
@@ -50,7 +55,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, user, login, logout, accessToken }}>
+      value={{
+        isAuthenticated,
+        user,
+        login,
+        logout,
+        accessToken,
+        setIsAuthenticated,
+        setUser,
+      }}>
       {children}
     </AuthContext.Provider>
   );

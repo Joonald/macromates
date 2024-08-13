@@ -1,4 +1,5 @@
 import express from "express";
+import "./interfaces/expressInterfaces";
 import dotenv from "dotenv";
 import connectDB from "./config/db";
 import recipeRouter from "./routes/recipeRoutes";
@@ -19,7 +20,7 @@ app.use(
   cors({
     origin: "http://localhost:5173",
     methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
@@ -33,13 +34,13 @@ app.get("/", (req, res) => {
   res.send("Hello World");
 });
 
-app.use((req, res, next) => {
-  // req.requestTime = new Date().toISOString();
-  console.log(req.cookies, " + request cookies");
-  console.log(req.headers, " + request headers");
+// app.use((req, res, next) => {
+//   // req.requestTime = new Date().toISOString();
+//   console.log(req.cookies, " + request cookies");
+//   console.log(req.headers, " + request headers");
 
-  next();
-});
+//   next();
+// });
 // MOUNTING ROUTERS
 app.use("/api/v1/recipes", recipeRouter);
 app.use("/api/v1/users", userRouter);

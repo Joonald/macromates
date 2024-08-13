@@ -1,4 +1,4 @@
-import { RequestHandler } from "express";
+import { NextFunction, RequestHandler } from "express";
 import User from "../models/userModels";
 import jwt from "jsonwebtoken";
 import { Types } from "mongoose";
@@ -107,10 +107,51 @@ export const login: RequestHandler = async (req, res, next) => {
   }
 };
 
+export const me: RequestHandler = async (req, res, next) => {
+  res.status(200).json({
+    message: "success",
+    user: req.user,
+  });
+};
+
 export const protectRoute: RequestHandler = async (req, res, next) => {
-  // 1 Getting token and check if its there
-  // req.requestTime = new Date();
-  // 2 Verification token
-  // 3 Check if user still exists
-  // 4 CHeck if user changed password after the token was issued
+  try {
+    console.log(req.cookies, req.headers);
+    // 1 Getting token and check if its there\
+    let token;
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith("Bearer")
+    ) {
+      token = req.headers.authorization.split(" ")[1];
+    } else if (req.cookies.jwt) {
+      token = req.cookies.jwt;
+    }
+    if (!token)
+      return res.status(401).json({
+        status: "fail",
+        message: "you are not logged in",
+      });
+    // 2 Verifify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
+      id: string;
+      iat: number;
+      exp: number;
+    };
+    // 3 Check if user still exists
+    const user = await User.findById(decoded.id);
+    if (!user) {
+      return res.status(401).json({
+        status: "fail",
+        message: "User no longer exists",
+      });
+    }
+    req.user = user;
+    next();
+  } catch (error) {
+    res.status(500).json({
+      status: "fail",
+      message: "Unknown error has occured",
+    });
+  }
 };

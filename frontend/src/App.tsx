@@ -21,8 +21,6 @@ import SearchResult from "./pages/SearchResult/SearchResult";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import Profile from "./pages/Profile/Profile";
 import SignUp from "./pages/SignUp/SignUp";
-// import { useAuth } from "./contexts/auth";
-// import Cookies from "js-cookie";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -92,7 +90,6 @@ function App() {
       steps: "",
     },
   ]);
-  // const { accessToken } = useAuth();
 
   useEffect(() => {
     axios.get(recipeURL).then((response) => {
@@ -102,14 +99,6 @@ function App() {
     });
   }, []);
 
-  // useEffect(() => {
-  //   if (accessToken === null) {
-  //     const retrieveToken = Cookies.get("accessToken");
-  //     console.log(retrieveToken);
-  //     return;
-  //   }
-  //   console.log(Cookies.get("accessToken"));
-  // }, [accessToken]);
   return (
     <>
       <AuthProvider>
