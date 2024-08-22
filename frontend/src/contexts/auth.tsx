@@ -37,7 +37,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       );
       const { user, accessToken } = response.data;
       // cookie expires in 10 mins
-      Cookies.set("accessToken", accessToken, { expires: 10 / (24 * 60) });
+      Cookies.set("accessToken", accessToken, { expires: 15 / (24 * 60) });
       setToken(accessToken);
       setUser(user);
       setIsAuthenticated(true);

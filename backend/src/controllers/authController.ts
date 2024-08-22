@@ -1,12 +1,18 @@
-import { NextFunction, RequestHandler } from "express";
+import { RequestHandler } from "express";
 import User from "../models/userModels";
-import jwt from "jsonwebtoken";
+import jwt, { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
 import { Types } from "mongoose";
 import { CookieOptions } from "express-serve-static-core";
 
-const signToken = (id: Types.ObjectId) => {
-  return jwt.sign({ id: id }, process.env.JWT_SECRET!, {
-    expiresIn: 1 * 24 * 60 * 60 * 1000,
+const signAccessToken = (id: Types.ObjectId) => {
+  return jwt.sign({ id: id }, process.env.JWT_ACCESS_TOKEN_SECRET!, {
+    expiresIn: "15m",
+  });
+};
+
+const signRefreshToken = (id: Types.ObjectId) => {
+  return jwt.sign({ id: id }, process.env.JWT_REFRESH_TOKEN_SECRET!, {
+    expiresIn: "1d",
   });
 };
 
@@ -22,22 +28,24 @@ export const signUp: RequestHandler = async (req, res) => {
       passwordConfirm: req.body.passwordConfirm,
     });
     // Signs the token and sends the server
-    const accessToken = signToken(newUser._id);
-    const refreshToken = signToken(newUser._id);
-    const cookieOptions = {
-      // secure: true,
-      domain: undefined,
+    const accessToken = signAccessToken(newUser._id);
+    const refreshToken = signRefreshToken(newUser._id);
+    const cookieOption: CookieOptions = {
+      secure: true,
       httpOnly: true,
-      maxAge: Number(process.env.JWT_COOKIES_EXPIRES_IN) * 24 * 60 * 60 * 1000,
+      expires: new Date(
+        Date.now() +
+          Number(process.env.JWT_COOKIES_EXPIRES_IN) * 24 * 60 * 60 * 1000
+      ),
+      sameSite: "none",
     };
-    res.cookie("jwt", refreshToken, cookieOptions);
-    res.status(201).json({
+    res.cookie("jwt", refreshToken, cookieOption);
+    return res.status(201).json({
       status: "success",
       message: "New user has been created",
       accessToken,
       user: newUser,
     });
-    console.log(req.headers, "request headers");
   } catch (error: any) {
     // Checking mongodb error to provide user feedback if duplicate username or email
     if (error.code && error.code === 11000) {
@@ -79,9 +87,8 @@ export const login: RequestHandler = async (req, res, next) => {
     }
 
     // Signs the token and sends the server
-    const accessToken = signToken(user._id);
-    const refreshToken = signToken(user._id);
-
+    const accessToken = signAccessToken(user._id);
+    const refreshToken = signRefreshToken(user._id);
     const cookieOption: CookieOptions = {
       secure: true,
       httpOnly: true,
@@ -91,16 +98,16 @@ export const login: RequestHandler = async (req, res, next) => {
       ),
       sameSite: "none",
     };
-
+    // Set the jwt token, and returns accessToken and user info
     res.cookie("jwt", refreshToken, cookieOption);
-    res.status(200).json({
+    return res.status(200).json({
       status: "success",
       message: "Log in successful",
       accessToken,
       user,
     });
   } catch (error) {
-    res.status(404).json({
+    return res.status(404).json({
       status: "Incorrect username or password.",
       message: error,
     });
@@ -108,16 +115,53 @@ export const login: RequestHandler = async (req, res, next) => {
 };
 
 export const me: RequestHandler = async (req, res, next) => {
-  res.status(200).json({
+  return res.status(200).json({
     message: "success",
     user: req.user,
   });
 };
 
+export const refreshToken: RequestHandler = async (req, res, next) => {
+  const refreshToken = req.cookies.jwt;
+  if (!refreshToken) {
+    return res.status(401).json({
+      status: "fail",
+      message: "No refresh token provided",
+    });
+  }
+
+  try {
+    const decoded = jwt.verify(
+      refreshToken,
+      process.env.JWT_REFRESH_TOKEN_SECRET!
+    ) as {
+      id: string;
+      iat: number;
+      exp: number;
+    };
+
+    const user = await User.findById(decoded.id);
+    if (!user) {
+      return res.status(401).json({
+        status: "fail",
+        message: "The user belonging to this token no longer exists",
+      });
+    }
+    const newAccessToken = signAccessToken(user._id);
+    return res.status(200).json({
+      accessToken: newAccessToken,
+    });
+  } catch (error) {
+    return res.status(403).json({
+      status: "fail",
+      message: " Invalid refresh token.",
+    });
+  }
+};
+
 export const protectRoute: RequestHandler = async (req, res, next) => {
   try {
-    console.log(req.cookies, req.headers);
-    // 1 Getting token and check if its there\
+    // 1. Getting token and check if its there\
     let token;
     if (
       req.headers.authorization &&
@@ -127,31 +171,50 @@ export const protectRoute: RequestHandler = async (req, res, next) => {
     } else if (req.cookies.jwt) {
       token = req.cookies.jwt;
     }
+
+    // 2. Check if token is present
     if (!token)
       return res.status(401).json({
         status: "fail",
-        message: "you are not logged in",
+        message: "Please log in to get access.",
       });
-    // 2 Verifify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
+
+    // 3. Verifify token
+    const decoded = jwt.verify(token, process.env.JWT_ACCESS_TOKEN_SECRET!) as {
       id: string;
       iat: number;
       exp: number;
     };
-    // 3 Check if user still exists
+
+    // 4. Check if user still exists
     const user = await User.findById(decoded.id);
     if (!user) {
       return res.status(401).json({
         status: "fail",
-        message: "User no longer exists",
+        message: "User no longer exists.",
       });
     }
+
+    // 5. Grant access to the protected route
     req.user = user;
     next();
   } catch (error) {
-    res.status(500).json({
-      status: "fail",
-      message: "Unknown error has occured",
-    });
+    if (error instanceof TokenExpiredError) {
+      return res.status(401).json({
+        status: "fail",
+        message: "Token Expired. Please sign in again.",
+      });
+    } else if (error instanceof JsonWebTokenError) {
+      return res.status(401).json({
+        status: "fail",
+        message: "Invalid Token. Please sign in again.",
+      });
+    } else {
+      // Fallback for other errors
+      return res.status(500).json({
+        status: "fail",
+        message: "Unknown error has occured.",
+      });
+    }
   }
 };
