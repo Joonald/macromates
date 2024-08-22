@@ -7,12 +7,13 @@ import axios from "axios";
 import { CustomError } from "../../interfaces/UserAuthInterfaces";
 import { ModalProps } from "../../interfaces/UserAuthInterfaces";
 import Spinner from "../Spinner";
+import { useAuth } from "../../contexts/auth";
+import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
 
 function SignUpForm({ toggleModal, isModalOpen }: ModalProps) {
-  // const [emailError, setEmailError] = useState<string | undefined>(undefined);
-  // const [usernameError, setUsernameError] = useState<string | undefined>(
-  //   undefined
-  // );
+  const { setIsAuthenticated, setUser, setAccessToken } = useAuth();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const {
     register,
@@ -33,7 +34,13 @@ function SignUpForm({ toggleModal, isModalOpen }: ModalProps) {
         signUpData,
         { withCredentials: true }
       );
+      const { user, accessToken } = response.data;
+      Cookies.set("accessToken", accessToken, { expires: 15 / (24 * 60) });
+      setAccessToken(accessToken);
+      setUser(user);
+      setIsAuthenticated(true);
       setIsLoading(false);
+      navigate("/profile");
       if (toggleModal) {
         toggleModal();
       }
@@ -135,15 +142,6 @@ function SignUpForm({ toggleModal, isModalOpen }: ModalProps) {
                     {errors.username?.message}
                   </p>
                 )}
-                {/* {usernameError && (
-                  <p className='text-xs text-red-500 mt-1'>
-                    <FontAwesomeIcon
-                      icon={faCircleExclamation}
-                      className='mr-1'
-                    />
-                    {usernameError}
-                  </p>
-                )} */}
               </div>
               <div className='flex gap-2'>
                 <div className='w-full'>
@@ -240,15 +238,6 @@ function SignUpForm({ toggleModal, isModalOpen }: ModalProps) {
                     {errors.email?.message}
                   </p>
                 )}
-                {/* {emailError && (
-                  <p className='text-xs text-red-500 mt-1'>
-                    <FontAwesomeIcon
-                      icon={faCircleExclamation}
-                      className='mr-1'
-                    />
-                    {emailError}
-                  </p>
-                )} */}
               </div>
               <div className='flex gap-2'>
                 <div className='w-full'>

@@ -9,6 +9,7 @@ interface AuthContextType {
   user: AuthUser | null;
   setUser: React.Dispatch<React.SetStateAction<AuthUser | null>>;
   accessToken: string | null;
+  setAccessToken: React.Dispatch<React.SetStateAction<string | null>>;
   login: (loginData: LoginUser) => Promise<void>;
   logout: () => void;
 }
@@ -19,6 +20,7 @@ export const AuthContext = createContext<AuthContextType>({
   user: null,
   setUser: () => {},
   accessToken: null,
+  setAccessToken: () => {},
   login: async () => {},
   logout: () => {},
 });
@@ -26,7 +28,7 @@ export const AuthContext = createContext<AuthContextType>({
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [user, setUser] = useState<AuthUser | null>(null);
-  const [accessToken, setToken] = useState<string | null>(null);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
 
   const login = async (loginData: LoginUser) => {
     try {
@@ -38,10 +40,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { user, accessToken } = response.data;
       // cookie expires in 10 mins
       Cookies.set("accessToken", accessToken, { expires: 15 / (24 * 60) });
-      setToken(accessToken);
+      setAccessToken(accessToken);
       setUser(user);
       setIsAuthenticated(true);
-      console.log("You are logged in.", response, `I am user ${user.username}`);
     } catch (error) {
       console.log(error, "Could not log you in.");
     }
@@ -61,6 +62,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         login,
         logout,
         accessToken,
+        setAccessToken,
         setIsAuthenticated,
         setUser,
       }}>
