@@ -34,13 +34,6 @@ app.get("/", (req, res) => {
   res.send("Hello World");
 });
 
-// app.use((req, res, next) => {
-//   // req.requestTime = new Date().toISOString();
-//   console.log(req.cookies, " + request cookies");
-//   console.log(req.headers, " + request headers");
-
-//   next();
-// });
 // MOUNTING ROUTERS
 app.use("/api/v1/recipes", recipeRouter);
 app.use("/api/v1/users", userRouter);
